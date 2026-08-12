@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadPlaceholder = document.getElementById('upload-placeholder');
     const actionButtons = document.getElementById('action-buttons');
     const downloadBtn = document.getElementById('download-btn');
+    const shareBtn = document.getElementById('share-btn');
     const resetBtn = document.getElementById('reset-btn');
     const sampleBtn = document.getElementById('sample-btn');
     const canvas = document.getElementById('photo-canvas');
@@ -161,6 +162,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     resetBtn.addEventListener('click', resetApp);
+
+    // Helper function to get Canvas blob
+    function getCanvasBlob(canvas) {
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+    }
+
+    shareBtn.addEventListener('click', async () => {
+        const text = "Just generated my official badge for Hacker House Goa 2026! 🌴🚀 Join me there and get yours:";
+        const url = "https://hackerhousegoa2026.com";
+
+        try {
+            // Try to share with the actual generated image file
+            if (navigator.canShare) {
+                const blob = await getCanvasBlob(canvas);
+                const file = new File([blob], 'badge.png', { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        title: 'Hacker House Goa 2026',
+                        text: text,
+                        url: url,
+                        files: [file]
+                    });
+                    return;
+                }
+            }
+
+            // Fallback to text + URL native share
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'Hacker House Goa 2026',
+                    text: text,
+                    url: url
+                });
+                return;
+            }
+            throw new Error("Native share not supported");
+        } catch (err) {
+            // Fallback to Twitter Web Intent if native share fails or is unsupported
+            const twitterIntent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+            window.open(twitterIntent, '_blank');
+        }
+    });
 
     sampleBtn.addEventListener('click', () => {
         userImage = new Image();
