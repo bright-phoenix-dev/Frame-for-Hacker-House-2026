@@ -5,10 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadBtn = document.getElementById('upload-btn');
     const uploadPlaceholder = document.getElementById('upload-placeholder');
     const actionButtons = document.getElementById('action-buttons');
-    const downloadBtn = document.getElementById('download-btn');
-    const shareBtn = document.getElementById('share-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const sampleBtn = document.getElementById('sample-btn');
     const canvas = document.getElementById('photo-canvas');
     const ctx = canvas.getContext('2d');
 
@@ -136,8 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
         fileInput.value = ''; // clear input
     }
 
-    // Download functionality
-    downloadBtn.addEventListener('click', () => {
+    // Helper function for safe event listeners
+    function safeAddEventListener(elementId, event, handler) {
+        const el = document.getElementById(elementId);
+        if (el) {
+            el.addEventListener(event, handler);
+        } else {
+            console.warn(`Element with ID '${elementId}' not found. Skipping event listener.`);
+        }
+    }
+
+    safeAddEventListener('download-btn', 'click', () => {
         // High quality PNG export
         const dataUrl = canvas.toDataURL('image/png', 1.0);
         const link = document.createElement('a');
@@ -147,61 +152,27 @@ document.addEventListener('DOMContentLoaded', () => {
         link.click();
         document.body.removeChild(link);
         
-        // Optional: Trigger a small confetti or success animation here
-        downloadBtn.innerHTML = 'Downloaded! 🎉';
-        setTimeout(() => {
-            downloadBtn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Download Badge
-            `;
-        }, 3000);
-    });
-
-    resetBtn.addEventListener('click', resetApp);
-
-    // Helper function to get Canvas blob
-    function getCanvasBlob(canvas) {
-        return new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
-    }
-
-    shareBtn.addEventListener('click', async () => {
-        const text = "Just generated my official badge for Hacker House Goa 2026! 🌴🚀 Join me there and get yours:";
-        const url = "https://hackerhousegoa2026.com";
-
-        try {
-            // Try to share with the actual generated image file
-            if (navigator.canShare) {
-                const blob = await getCanvasBlob(canvas);
-                const file = new File([blob], 'badge.png', { type: 'image/png' });
-                if (navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        title: 'Hacker House Goa 2026',
-                        text: text,
-                        url: url,
-                        files: [file]
-                    });
-                    return;
-                }
-            }
-
-            // Fallback to text + URL native share
-            if (navigator.share) {
-                await navigator.share({
-                    title: 'Hacker House Goa 2026',
-                    text: text,
-                    url: url
-                });
-                return;
-            }
-            throw new Error("Native share not supported");
-        } catch (err) {
-            // Fallback to Twitter Web Intent if native share fails or is unsupported
-            const twitterIntent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-            window.open(twitterIntent, '_blank');
+        const downloadBtn = document.getElementById('download-btn');
+        if (downloadBtn) {
+            downloadBtn.innerHTML = 'Downloaded! 🎉';
+            setTimeout(() => {
+                downloadBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Download Badge
+                `;
+            }, 3000);
         }
     });
 
-    sampleBtn.addEventListener('click', () => {
+    safeAddEventListener('reset-btn', 'click', resetApp);
+
+    safeAddEventListener('shareXBtn', 'click', () => {
+        const text = encodeURIComponent("Just generated my official badge for Hacker House Goa 2026! 🌴🚀 Check it out & get yours here:");
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    });
+
+    safeAddEventListener('sample-btn', 'click', () => {
         userImage = new Image();
         userImage.crossOrigin = 'anonymous'; // Crucial for external URL to avoid tainted canvas
         userImage.onload = () => {
