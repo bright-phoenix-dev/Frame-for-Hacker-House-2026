@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 2. Open X Intent immediately in a new tab
-        const text = encodeURIComponent("Just generated my official badge for Hacker House Goa 2026! 🌴🚀 Check it out & get yours here:");
+        const text = encodeURIComponent("Just generated my official badge for Hacker House Goa 2026! 🌴🚀 Get yours here: #FrameInGoa");
         const url = encodeURIComponent(window.location.href);
         window.open(`https://x.com/intent/post?text=${text}&url=${url}`, '_blank');
     });
