@@ -166,10 +166,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     safeAddEventListener('reset-btn', 'click', resetApp);
 
-    safeAddEventListener('shareXBtn', 'click', () => {
-        const text = encodeURIComponent("Just generated my official badge for Hacker House Goa 2026! 🌴🚀 Check it out & get yours here:");
-        const url = encodeURIComponent(window.location.href);
-        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    // Helper function to get Canvas blob
+    function getCanvasBlob(canvas) {
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+    }
+
+    safeAddEventListener('shareXBtn', 'click', async () => {
+        const text = "Just generated my official badge for Hacker House Goa 2026! 🌴🚀 Check it out & get yours here:";
+        const url = window.location.href;
+        const encodedText = encodeURIComponent(text);
+        const encodedUrl = encodeURIComponent(url);
+
+        try {
+            const blob = await getCanvasBlob(canvas);
+            const file = new File([blob], 'hacker-house-badge.png', { type: 'image/png' });
+            
+            // 1. TRY NATIVE FILE SHARING FIRST (Web Share API)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    title: 'Hacker House Goa 2026 Badge',
+                    text: text,
+                    url: url,
+                    files: [file]
+                });
+                return;
+            }
+
+            // 2. DESKTOP FALLBACK (Auto-download + Intent)
+            const dataUrl = canvas.toDataURL('image/png', 1.0);
+            const link = document.createElement('a');
+            link.download = 'badge.png';
+            link.href = dataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert("Badge downloaded! Attach it to your tweet!");
+
+            window.open(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`, '_blank');
+        } catch (err) {
+            console.error('Error during share:', err);
+            window.open(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`, '_blank');
+        }
     });
 
     safeAddEventListener('sample-btn', 'click', () => {
