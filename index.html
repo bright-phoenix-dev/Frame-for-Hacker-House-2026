@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hacker House Goa 2026 - Photo Booth</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1 class="logo-text">HACKER<span class="highlight">HOUSE</span></h1>
+            <p class="subtitle">GOA, INDIA &bull; 2026</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left/Top: Canvas Preview -->
+            <section class="preview-section">
+                <div class="canvas-wrapper" id="drop-zone">
+                    <canvas id="photo-canvas" width="1080" height="1080"></canvas>
+                    <div class="upload-placeholder" id="upload-placeholder">
+                        <div class="icon">📸</div>
+                        <p>Drag & Drop a photo<br>or click to upload</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right/Bottom: Controls -->
+            <section class="controls-section">
+                <div class="controls-card glass-panel">
+                    <h2 class="card-title">Create Your Badge</h2>
+                    <p class="card-desc">Upload your photo and we'll automatically frame it perfectly for the event.</p>
+                    
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;">
+                    
+                    <button id="upload-btn" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Upload Photo
+                    </button>
+
+
+                    <div id="action-buttons" class="hidden">
+                        <button id="download-btn" class="btn btn-accent">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download Badge
+                        </button>
+                        <div style="display: flex; gap: 1rem; width: 100%;">
+                            <button id="reset-btn" class="btn btn-secondary" style="flex: 1;">Start Over</button>
+                            <button id="sample-btn" class="btn btn-secondary" style="flex: 1;">Try Sample Image</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Made with 🌴 for Hacker House Goa</p>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
