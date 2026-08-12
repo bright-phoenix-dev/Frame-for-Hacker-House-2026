@@ -118,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function showControls() {
         uploadBtn.classList.add('hidden');
         uploadPlaceholder.classList.add('hidden');
+        const initialSampleBtn = document.getElementById('initialSampleBtn');
+        if (initialSampleBtn) initialSampleBtn.classList.add('hidden');
         actionButtons.classList.remove('hidden');
     }
 
@@ -127,6 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         uploadBtn.classList.remove('hidden');
         uploadPlaceholder.classList.remove('hidden');
+        const initialSampleBtn = document.getElementById('initialSampleBtn');
+        if (initialSampleBtn) initialSampleBtn.classList.remove('hidden');
         actionButtons.classList.add('hidden');
         
         fileInput.value = ''; // clear input
@@ -191,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open(`https://x.com/intent/post?text=${text}&url=${url}`, '_blank');
     });
 
-    safeAddEventListener('sample-btn', 'click', () => {
+    function loadSampleImage() {
         userImage = new Image();
         userImage.crossOrigin = 'anonymous'; // Crucial for external URL to avoid tainted canvas
         userImage.onload = () => {
@@ -199,7 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
             showControls();
         };
         userImage.src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80';
-    });
+    }
+
+    safeAddEventListener('sample-btn', 'click', loadSampleImage);
+    safeAddEventListener('initialSampleBtn', 'click', loadSampleImage);
 
     // Boot
     loadFrame();
