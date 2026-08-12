@@ -22,10 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         frameImage = new Image();
         frameImage.crossOrigin = "anonymous";
         frameImage.src = FRAME_URL;
-        frameImage.onload = () => {
-            console.log('Frame loaded successfully');
-            if (userImage) renderCanvas();
-        };
+        frameImage.onload = renderCanvas;
         frameImage.onerror = () => {
             console.error('Failed to load ' + FRAME_URL + '. Ensure the image is in the same directory.');
         };
@@ -84,38 +81,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderCanvas() {
-        if (!userImage || !frameImage) return;
+        if (!frameImage || !frameImage.complete) return;
 
-        // 1. READ FRAME DIMENSIONS
-        canvas.width = frameImage.naturalWidth;
-        canvas.height = frameImage.naturalHeight;
+        // Ensure canvas matches frame natural dimensions
+        canvas.width = frameImage.naturalWidth || 800;
+        canvas.height = frameImage.naturalHeight || 800;
 
-        // 1. UPDATED CUTOUT BOUNDING BOX COORDINATES
-        const cutoutX = canvas.width * 0.203;
-        const cutoutY = canvas.height * 0.237;
-        const cutoutWidth = canvas.width * 0.594;
-        const cutoutHeight = canvas.height * 0.570;
-
-        // 2. CENTER AND CLIP STRICTLY INSIDE CUTOUT
-        const scale = Math.max(cutoutWidth / userImage.width, cutoutHeight / userImage.height);
-        
-        const drawW = userImage.width * scale;
-        const drawH = userImage.height * scale;
-
-        const imgX = cutoutX + (cutoutWidth - drawW) / 2;
-        const imgY = cutoutY + (cutoutHeight - drawH) / 2;
-
-        // 3. CANVAS DRAW SEQUENCE WITH CLIP MASK
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(cutoutX, cutoutY, cutoutWidth, cutoutHeight);
-        ctx.clip();
-        ctx.drawImage(userImage, imgX, imgY, drawW, drawH);
-        ctx.restore();
 
-        // Draw frame overlay on top
+        // If user image is provided and complete, draw it clipped
+        if (userImage && userImage.complete) {
+            const cutoutX = canvas.width * 0.203;
+            const cutoutY = canvas.height * 0.237;
+            const cutoutWidth = canvas.width * 0.594;
+            const cutoutHeight = canvas.height * 0.570;
+
+            const scale = Math.max(cutoutWidth / userImage.width, cutoutHeight / userImage.height);
+            
+            const drawW = userImage.width * scale;
+            const drawH = userImage.height * scale;
+
+            const imgX = cutoutX + (cutoutWidth - drawW) / 2;
+            const imgY = cutoutY + (cutoutHeight - drawH) / 2;
+            
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(cutoutX, cutoutY, cutoutWidth, cutoutHeight);
+            ctx.clip();
+            ctx.drawImage(userImage, imgX, imgY, drawW, drawH);
+            ctx.restore();
+        }
+
+        // 2. Draw frame overlay on top
         ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
 
         // Show canvas
@@ -130,8 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetApp() {
         userImage = null;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.style.display = 'none';
+        renderCanvas();
         
         uploadBtn.classList.remove('hidden');
         uploadPlaceholder.classList.remove('hidden');
